@@ -20,7 +20,6 @@ app.get('/', (req, res) => {
   res.send('API Barbearia rodando 🚀');
 });
 
-//Register
 app.post('/register', async (req, res) => {
   const { nome, email, senha } = req.body;
 
@@ -39,6 +38,20 @@ app.post('/register', async (req, res) => {
     console.error(error);
     res.status(500).json({
       erro: 'Erro ao cadastrar usuário'
+    });
+  }
+});
+
+app.get('/users', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM users');
+
+    res.json(result.rows);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      erro: 'Erro ao buscar usuários'
     });
   }
 });
