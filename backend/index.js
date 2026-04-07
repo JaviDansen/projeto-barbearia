@@ -7,11 +7,11 @@ const pool = require('./db');
 app.use(express.json());
 
 // Teste de conexão com o banco
-pool.query('SELECT NOW()', (err, result) => {
+pool.query(`SELECT TO_CHAR(NOW() AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY HH24:MI') AS agora`, (err, result) => {
   if (err) {
     console.error('Erro ao conectar no banco:', err);
   } else {
-    console.log('Banco conectado:', result.rows[0]);
+    console.log('Banco conectado em:', result.rows[0].agora);
   }
 });
 
@@ -25,7 +25,9 @@ app.post('/register', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) RETURNING *',
+      `INSERT INTO usuarios (nome, email, senha)
+       VALUES ($1, $2, $3)
+       RETURNING id, nome, email`,
       [nome, email, senha]
     );
 
@@ -44,7 +46,11 @@ app.post('/register', async (req, res) => {
 
 app.get('/users', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM usuarios');
+    const result = await pool.query(
+      `SELECT id, nome, email
+       FROM usuarios`
+    );
+
     res.json(result.rows);
   } catch (error) {
     console.error('Erro no /users:', error.message);
@@ -56,7 +62,11 @@ app.get('/users', async (req, res) => {
 
 app.get('/services', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM servicos');
+    const result = await pool.query(
+      `SELECT id, nome, preco, duracao
+       FROM servicos`
+    );
+
     res.json(result.rows);
   } catch (error) {
     console.error('Erro no /services:', error.message);
@@ -71,7 +81,9 @@ app.post('/services', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'INSERT INTO servicos (nome, preco, duracao) VALUES ($1, $2, $3) RETURNING *',
+      `INSERT INTO servicos (nome, preco, duracao)
+       VALUES ($1, $2, $3)
+       RETURNING id, nome, preco, duracao`,
       [nome, preco, duracao]
     );
 
@@ -90,7 +102,19 @@ app.post('/services', async (req, res) => {
 
 app.get('/funcionarios', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM funcionarios');
+    const result = await pool.query(`
+      SELECT
+        id,
+        nome,
+        especialidade,
+        telefone,
+        TO_CHAR(
+          criado_em AT TIME ZONE 'America/Sao_Paulo',
+          'DD/MM/YYYY HH24:MI'
+        ) AS criado_em
+      FROM funcionarios
+    `);
+
     res.json(result.rows);
   } catch (error) {
     console.error('Erro no /funcionarios:', error.message);
