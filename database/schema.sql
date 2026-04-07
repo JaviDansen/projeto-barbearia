@@ -19,3 +19,17 @@ CREATE TABLE funcionarios (
     telefone VARCHAR(20),
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE agendamentos (
+    id SERIAL PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    servico_id INT NOT NULL,
+    funcionario_id INT NOT NULL,
+    data_hora TIMESTAMP NOT NULL,
+    status VARCHAR(50) DEFAULT 'agendado',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (servico_id) REFERENCES servicos(id),
+    FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+);
