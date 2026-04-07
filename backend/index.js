@@ -66,6 +66,28 @@ app.get('/services', async (req, res) => {
   }
 });
 
+app.post('/services', async (req, res) => {
+  const { nome, preco, duracao } = req.body;
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO servicos (nome, preco, duracao) VALUES ($1, $2, $3) RETURNING *',
+      [nome, preco, duracao]
+    );
+
+    res.json({
+      mensagem: 'Serviço criado com sucesso',
+      servico: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error('Erro no /services:', error.message);
+    res.status(500).json({
+      erro: 'Erro ao criar serviço'
+    });
+  }
+});
+
 // Servidor
 app.listen(3000, () => {
   console.log('Servidor rodando em http://localhost:3000');
