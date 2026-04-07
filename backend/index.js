@@ -3,7 +3,7 @@ const app = express();
 
 const pool = require('./db');
 
-// Middleware (vem antes das rotas)
+// Middleware
 app.use(express.json());
 
 // Teste de conexão com o banco
@@ -25,7 +25,7 @@ app.post('/register', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'INSERT INTO users (nome, email, senha) VALUES ($1, $2, $3) RETURNING *',
+      'INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) RETURNING *',
       [nome, email, senha]
     );
 
@@ -44,7 +44,7 @@ app.post('/register', async (req, res) => {
 
 app.get('/users', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM users');
+    const result = await pool.query('SELECT * FROM usuarios');
 
     res.json(result.rows);
 
