@@ -88,6 +88,18 @@ app.post('/services', async (req, res) => {
   }
 });
 
+app.get('/funcionarios', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM funcionarios');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Erro no /funcionarios:', error.message);
+    res.status(500).json({
+      erro: 'Erro ao buscar funcionários'
+    });
+  }
+});
+
 // Servidor
 app.listen(3000, () => {
   console.log('Servidor rodando em http://localhost:3000');
