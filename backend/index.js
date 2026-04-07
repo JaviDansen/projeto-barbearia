@@ -156,6 +156,43 @@ app.post('/funcionarios', async (req, res) => {
   }
 });
 
+app.post('/agendamentos', async (req, res) => {
+  const { usuario_id, servico_id, funcionario_id, data_hora } = req.body;
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO agendamentos (usuario_id, servico_id, funcionario_id, data_hora)
+       VALUES ($1, $2, $3, $4)
+       RETURNING
+         id,
+         usuario_id,
+         servico_id,
+         funcionario_id,
+         TO_CHAR(
+           data_hora AT TIME ZONE 'America/Sao_Paulo',
+           'DD/MM/YYYY HH24:MI'
+         ) AS data_hora,
+         status,
+         TO_CHAR(
+           criado_em AT TIME ZONE 'America/Sao_Paulo',
+           'DD/MM/YYYY HH24:MI'
+         ) AS criado_em`,
+      [usuario_id, servico_id, funcionario_id, data_hora]
+    );
+
+    res.json({
+      mensagem: 'Agendamento criado com sucesso',
+      agendamento: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error('Erro no /agendamentos:', error.message);
+    res.status(500).json({
+      erro: 'Erro ao criar agendamento'
+    });
+  }
+});
+
 // Servidor
 app.listen(3000, () => {
   console.log('Servidor rodando em http://localhost:3000');
