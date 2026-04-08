@@ -4,6 +4,9 @@ const router = express.Router();
 const pool = require('../db');
 const bcrypt = require('bcrypt');
 
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = 'barbearia_api_chave_secreta';
+
 router.post('/register', async (req, res) => {
   const { nome, email, senha } = req.body;
 
@@ -54,14 +57,14 @@ router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
 
   try {
-    // validar campos
+    //validar campos
     if (!email || !senha) {
       return res.status(400).json({
         erro: 'email e senha são obrigatórios'
       });
     }
 
-    // buscar usuário
+    //buscar usuarios
     const result = await pool.query(
       `SELECT id, nome, email, senha
        FROM usuarios
@@ -77,7 +80,7 @@ router.post('/login', async (req, res) => {
 
     const usuario = result.rows[0];
 
-    // comparar senha
+    //comparar senhas
     const senhaValida = await bcrypt.compare(senha, usuario.senha);
 
     if (!senhaValida) {
@@ -86,15 +89,25 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    const token = jwt.sign(
+      {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email
+      },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
     return res.status(200).json({
       mensagem: 'Login realizado com sucesso',
+      token,
       usuario: {
         id: usuario.id,
         nome: usuario.nome,
         email: usuario.email
       }
     });
-
   } catch (error) {
     console.error('Erro no POST /login:', error.message);
     return res.status(500).json({
