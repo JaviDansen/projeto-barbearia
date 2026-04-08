@@ -230,6 +230,35 @@ app.put('/appointments/:id/cancel', async (req, res) => {
   const { id } = req.params;
 
   try {
+    // 1. validar id
+    if (isNaN(Number(id))) {
+      return res.status(400).json({
+        erro: 'ID inválido'
+      });
+    }
+
+    // 2. verificar se o agendamento existe
+    const agendamentoExistente = await pool.query(
+      `SELECT id, status
+       FROM agendamentos
+       WHERE id = $1`,
+      [id]
+    );
+
+    if (agendamentoExistente.rows.length === 0) {
+      return res.status(404).json({
+        erro: 'Agendamento não encontrado'
+      });
+    }
+
+    // 3. verificar se já está cancelado
+    if (agendamentoExistente.rows[0].status === 'cancelado') {
+      return res.status(400).json({
+        erro: 'Esse agendamento já está cancelado'
+      });
+    }
+
+    // 4. cancelar
     const result = await pool.query(
       `UPDATE agendamentos
        SET status = 'cancelado'
@@ -238,20 +267,23 @@ app.put('/appointments/:id/cancel', async (req, res) => {
          id,
          status,
          TO_CHAR(
+           data_hora AT TIME ZONE 'America/Sao_Paulo',
+           'DD/MM/YYYY HH24:MI'
+         ) AS data_hora,
+         TO_CHAR(
            criado_em AT TIME ZONE 'America/Sao_Paulo',
            'DD/MM/YYYY HH24:MI'
          ) AS criado_em`,
       [id]
     );
 
-    res.json({
+    return res.status(200).json({
       mensagem: 'Agendamento cancelado com sucesso',
       agendamento: result.rows[0]
     });
-
   } catch (error) {
-    console.error('Erro no cancelamento:', error.message);
-    res.status(500).json({
+    console.error('Erro no PUT /appointments/:id/cancel:', error.message);
+    return res.status(500).json({
       erro: 'Erro ao cancelar agendamento'
     });
   }
