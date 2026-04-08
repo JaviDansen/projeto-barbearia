@@ -6,12 +6,12 @@ const auth = require('../middlewares/auth');
 
 // Criar agendamento
 router.post('/appointments', auth, async (req, res) => {
-  const { usuario_id, servico_id, funcionario_id, data_hora } = req.body;
+  const { servico_id, funcionario_id, data_hora } = req.body;
+  const usuario_id = req.usuario.id;
 
   try {
     // 1. validar campos obrigatórios
     if (
-      usuario_id == null ||
       servico_id == null ||
       funcionario_id == null ||
       !data_hora
@@ -221,7 +221,8 @@ router.put('/appointments/:id/cancel', auth, async (req, res) => {
 // Editar agendamento
 router.put('/appointments/:id', auth, async (req, res) => {
   const { id } = req.params;
-  const { usuario_id, servico_id, funcionario_id, data_hora } = req.body;
+  const { servico_id, funcionario_id, data_hora } = req.body;
+  const usuario_id = req.usuario.id;
 
   try {
     // 1. validar campos obrigatórios
