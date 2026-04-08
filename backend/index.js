@@ -226,6 +226,37 @@ app.get('/appointments', async (req, res) => {
   }
 });
 
+app.put('/appointments/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `UPDATE agendamentos
+       SET status = 'cancelado'
+       WHERE id = $1
+       RETURNING
+         id,
+         status,
+         TO_CHAR(
+           criado_em AT TIME ZONE 'America/Sao_Paulo',
+           'DD/MM/YYYY HH24:MI'
+         ) AS criado_em`,
+      [id]
+    );
+
+    res.json({
+      mensagem: 'Agendamento cancelado com sucesso',
+      agendamento: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error('Erro no cancelamento:', error.message);
+    res.status(500).json({
+      erro: 'Erro ao cancelar agendamento'
+    });
+  }
+});
+
 // Servidor
 app.listen(3000, () => {
   console.log('Servidor rodando em http://localhost:3000');
