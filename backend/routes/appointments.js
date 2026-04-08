@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const pool = require('../db');
+const auth = require('../middlewares/auth');
 
 // Criar agendamento
-router.post('/appointments', async (req, res) => {
+router.post('/appointments', auth, async (req, res) => {
   const { usuario_id, servico_id, funcionario_id, data_hora } = req.body;
 
   try {
@@ -120,7 +121,7 @@ router.post('/appointments', async (req, res) => {
 });
 
 // Listar agendamentos
-router.get('/appointments', async (req, res) => {
+router.get('/appointments', auth, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
@@ -154,7 +155,7 @@ router.get('/appointments', async (req, res) => {
 });
 
 // Cancelar agendamento
-router.put('/appointments/:id/cancel', async (req, res) => {
+router.put('/appointments/:id/cancel', auth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -218,7 +219,7 @@ router.put('/appointments/:id/cancel', async (req, res) => {
 });
 
 // Editar agendamento
-router.put('/appointments/:id', async (req, res) => {
+router.put('/appointments/:id', auth, async (req, res) => {
   const { id } = req.params;
   const { usuario_id, servico_id, funcionario_id, data_hora } = req.body;
 
