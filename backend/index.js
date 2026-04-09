@@ -1,8 +1,5 @@
 require('dotenv').config();
 
-console.log('JWT_SECRET carregado?', !!process.env.JWT_SECRET);
-console.log('DATABASE_URL carregada?', !!process.env.DATABASE_URL);
-
 const app = require('./app');
 const pool = require('./db');
 
