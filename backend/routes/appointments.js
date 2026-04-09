@@ -343,6 +343,7 @@ router.put('/appointments/:id', auth, async (req, res) => {
   }
 });
 
+// Meus agendamentos
 router.get('/my-appointments', auth, async (req, res) => {
   const usuario_id = req.usuario.id;
 
@@ -370,6 +371,74 @@ router.get('/my-appointments', auth, async (req, res) => {
     console.error('Erro no GET /my-appointments:', error.message);
     return res.status(500).json({
       erro: 'Erro ao buscar seus agendamentos'
+    });
+  }
+});
+
+// Disponibilidade Funcionário + Data
+router.get('/availability', auth, async (req, res) => {
+  const { funcionario_id, data } = req.query;
+
+  try {
+    // 1. validar campos obrigatórios
+    if (!funcionario_id || !data) {
+      return res.status(400).json({
+        erro: 'funcionario_id e data são obrigatórios'
+      });
+    }
+
+    // 2. validar funcionario_id
+    if (isNaN(Number(funcionario_id))) {
+      return res.status(400).json({
+        erro: 'funcionario_id inválido'
+      });
+    }
+
+    // 3. validar data
+    if (isNaN(Date.parse(data))) {
+      return res.status(400).json({
+        erro: 'data inválida'
+      });
+    }
+
+    // 4. verificar se funcionário existe
+    const funcionarioExiste = await pool.query(
+      `SELECT id FROM funcionarios WHERE id = $1`,
+      [funcionario_id]
+    );
+
+    if (funcionarioExiste.rows.length === 0) {
+      return res.status(404).json({
+        erro: 'Funcionário não encontrado'
+      });
+    }
+
+    // 5. buscar horários ocupados no dia
+    const result = await pool.query(
+      `SELECT
+         TO_CHAR(
+           data_hora AT TIME ZONE 'America/Sao_Paulo',
+           'HH24:MI'
+         ) AS horario
+       FROM agendamentos
+       WHERE funcionario_id = $1
+         AND DATE(data_hora AT TIME ZONE 'America/Sao_Paulo') = $2
+         AND status != 'cancelado'
+       ORDER BY data_hora ASC`,
+      [funcionario_id, data]
+    );
+
+    const horarios_ocupados = result.rows.map(item => item.horario);
+
+    return res.status(200).json({
+      funcionario_id: Number(funcionario_id),
+      data,
+      horarios_ocupados
+    });
+  } catch (error) {
+    console.error('Erro no GET /availability:', error.message);
+    return res.status(500).json({
+      erro: 'Erro ao buscar disponibilidade'
     });
   }
 });
