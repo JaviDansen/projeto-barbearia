@@ -1,4 +1,4 @@
-import { useAppointments } from "../../../hooks/useApi";
+import { useMyAppointments } from "../../../hooks/useApi";
 import Sidebar from "../../../components/layout/Sidebar";
 import Navbar from "../../../components/layout/Navbar";
 import MobileNav from "../../../components/layout/MobileNav";
@@ -7,7 +7,7 @@ import Skeleton from "../../../components/ui/Skeleton";
 import { formatDate, formatTime } from "../../../utils/formatDate";
 
 const Dashboard = () => {
-  const { data: appointments, isLoading } = useAppointments();
+  const { data: appointments, isLoading } = useMyAppointments();
 
   return (
     <div className="flex min-h-screen bg-zinc-950 text-white">
@@ -47,9 +47,9 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {appointments.data.map((appt) => (
                   <Card key={appt.id}>
-                    <p>Serviço: {appt.servico_nome}</p>
+                    <p>Serviço: {appt.servico}</p>
                     <p>Data: {formatDate(appt.data_hora)} às {formatTime(appt.data_hora)}</p>
-                    <p>Funcionário: {appt.funcionario_nome}</p>
+                    <p>Funcionário: {appt.funcionario}</p>
                     <p>Status: {appt.status}</p>
                   </Card>
                 ))}

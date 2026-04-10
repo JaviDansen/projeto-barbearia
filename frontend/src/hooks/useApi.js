@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getServices, createService } from '../api/services.api';
 import { getEmployees, createEmployee } from '../api/employees.api';
-import { getAppointments, createAppointment } from '../api/appointments.api';
+import { getAppointments, getMyAppointments, createAppointment } from '../api/appointments.api';
 
 export const useServices = () => {
   return useQuery({
@@ -53,3 +53,9 @@ export const useCreateAppointment = () => {
     },
   });
 };
+
+export const useMyAppointments = () =>
+  useQuery({
+    queryKey: ["myAppointments"],
+    queryFn: getMyAppointments,
+  });
