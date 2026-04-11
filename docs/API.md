@@ -1,8 +1,6 @@
 # API - Sistema de Barbearia
 
-Documentação dos endpoints atuais da API do sistema de agendamento para barbearia.]
-
-Base URL: https://naregua-app.vercel.app
+Documentação dos endpoints atuais da API do sistema de agendamento para barbearia.
 
 # Autenticação
 
@@ -11,6 +9,33 @@ A API utiliza autenticação via JWT.
 Rotas protegidas exigem o header:
 
 Authorization: Bearer TOKEN
+
+# Padrão de Resposta
+
+Respostas de sucesso com objeto:
+
+{
+  "mensagem": "Texto da operação realizada com sucesso",
+  "dados": {
+    "id": 1
+  }
+}
+
+Respostas de sucesso com listagem:
+
+{
+  "dados": [
+    {
+      "id": 1
+    }
+  ]
+}
+
+Respostas de erro:
+
+{
+  "erro": "Mensagem do erro"
+}
 
 # Auth
 
@@ -29,7 +54,7 @@ Response:
 
 {
   "mensagem": "Usuário cadastrado com sucesso",
-  "usuario": {
+  "dados": {
     "id": 1,
     "nome": "João",
     "email": "joao@email.com"
@@ -50,11 +75,13 @@ Response:
 
 {
   "mensagem": "Login realizado com sucesso",
-  "token": "jwt_token",
-  "usuario": {
-    "id": 1,
-    "nome": "João",
-    "email": "joao@email.com"
+  "dados": {
+    "token": "jwt_token",
+    "usuario": {
+      "id": 1,
+      "nome": "João",
+      "email": "joao@email.com"
+    }
   }
 }
 
@@ -63,13 +90,15 @@ Listar usuários
 
 Response:
 
-[
-  {
-    "id": 1,
-    "nome": "João",
-    "email": "joao@email.com"
-  }
-]
+{
+  "dados": [
+    {
+      "id": 1,
+      "nome": "João",
+      "email": "joao@email.com"
+    }
+  ]
+}
 
 # Serviços
 
@@ -78,14 +107,16 @@ Listar serviços
 
 Response:
 
-[
-  {
-    "id": 1,
-    "nome": "Corte Masculino",
-    "preco": "35.00",
-    "duracao": 30
-  }
-]
+{
+  "dados": [
+    {
+      "id": 1,
+      "nome": "Corte Masculino",
+      "preco": "35.00",
+      "duracao": 30
+    }
+  ]
+}
 
 POST /services  
 Criar serviço  
@@ -99,6 +130,18 @@ Request:
   "duracao": 30
 }
 
+Response:
+
+{
+  "mensagem": "Serviço criado com sucesso",
+  "dados": {
+    "id": 1,
+    "nome": "Corte Masculino",
+    "preco": "35.00",
+    "duracao": 30
+  }
+}
+
 # Funcionários
 
 GET /employees  
@@ -106,14 +149,17 @@ Listar funcionários
 
 Response:
 
-[
-  {
-    "id": 1,
-    "nome": "Carlos",
-    "especialidade": "Corte e barba",
-    "telefone": "98999999999"
-  }
-]
+{
+  "dados": [
+    {
+      "id": 1,
+      "nome": "Carlos",
+      "especialidade": "Corte e barba",
+      "telefone": "98999999999",
+      "criado_em": "10/04/2026 05:02"
+    }
+  ]
+}
 
 POST /employees  
 Criar funcionário  
@@ -125,6 +171,19 @@ Request:
   "nome": "Carlos",
   "especialidade": "Corte e barba",
   "telefone": "98999999999"
+}
+
+Response:
+
+{
+  "mensagem": "Funcionário criado com sucesso",
+  "dados": {
+    "id": 1,
+    "nome": "Carlos",
+    "especialidade": "Corte e barba",
+    "telefone": "98999999999",
+    "criado_em": "10/04/2026 05:02"
+  }
 }
 
 # Agendamentos
@@ -141,22 +200,40 @@ Request:
   "data_hora": "2026-04-15 14:00"
 }
 
+Response:
+
+{
+  "mensagem": "Agendamento criado com sucesso",
+  "dados": {
+    "id": 1,
+    "usuario_id": 1,
+    "servico_id": 1,
+    "funcionario_id": 1,
+    "data_hora": "15/04/2026 14:00",
+    "status": "agendado",
+    "criado_em": "10/04/2026 12:00"
+  }
+}
+
 GET /appointments  
 Listar todos os agendamentos  
 Requer autenticação
 
 Response:
 
-[
-  {
-    "id": 1,
-    "usuario": "João",
-    "servico": "Corte Masculino",
-    "funcionario": "Carlos",
-    "data_hora": "15/04/2026 14:00",
-    "status": "agendado"
-  }
-]
+{
+  "dados": [
+    {
+      "id": 1,
+      "usuario": "João",
+      "servico": "Corte Masculino",
+      "funcionario": "Carlos",
+      "data_hora": "15/04/2026 14:00",
+      "status": "agendado",
+      "criado_em": "10/04/2026 12:00"
+    }
+  ]
+}
 
 GET /my-appointments  
 Listar agendamentos do usuário  
@@ -164,15 +241,17 @@ Requer autenticação
 
 Response:
 
-[
-  {
-    "id": 1,
-    "servico": "Corte Masculino",
-    "funcionario": "Carlos",
-    "data_hora": "15/04/2026 14:00",
-    "status": "agendado"
-  }
-]
+{
+  "dados": [
+    {
+      "id": 1,
+      "servico": "Corte Masculino",
+      "funcionario": "Carlos",
+      "data_hora": "15/04/2026 14:00",
+      "status": "agendado"
+    }
+  ]
+}
 
 PUT /appointments/:id  
 Editar agendamento  
@@ -186,6 +265,21 @@ Request:
   "data_hora": "2026-04-20 15:00"
 }
 
+Response:
+
+{
+  "mensagem": "Agendamento atualizado com sucesso",
+  "dados": {
+    "id": 1,
+    "usuario_id": 1,
+    "servico_id": 1,
+    "funcionario_id": 1,
+    "data_hora": "20/04/2026 15:00",
+    "status": "agendado",
+    "criado_em": "10/04/2026 12:00"
+  }
+}
+
 PUT /appointments/:id/cancel  
 Cancelar agendamento  
 Requer autenticação
@@ -193,7 +287,13 @@ Requer autenticação
 Response:
 
 {
-  "mensagem": "Agendamento cancelado com sucesso"
+  "mensagem": "Agendamento cancelado com sucesso",
+  "dados": {
+    "id": 1,
+    "status": "cancelado",
+    "data_hora": "15/04/2026 14:00",
+    "criado_em": "10/04/2026 12:00"
+  }
 }
 
 GET /availability  
@@ -212,10 +312,14 @@ Exemplo:
 Response:
 
 {
-  "horarios_ocupados": [
-    "10:00",
-    "14:00"
-  ]
+  "dados": {
+    "funcionario_id": 1,
+    "data": "2026-04-15",
+    "horarios_ocupados": [
+      "10:00",
+      "14:00"
+    ]
+  }
 }
 
 # Status dos Agendamentos
