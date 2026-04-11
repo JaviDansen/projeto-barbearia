@@ -46,12 +46,12 @@ router.post('/register', async (req, res) => {
       usuario: result.rows[0]
     });
   } catch (error) {
-    console.error('Erro no POST /register:', error.message);
-    return res.status(500).json({
-      erro: 'Erro ao cadastrar usuário'
-    });
-  }
-});
+  console.error('Erro no POST /register:', error);
+  return res.status(500).json({
+    erro: 'Erro ao cadastrar usuário',
+    detalhe: error.message
+  });
+}
 
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
@@ -109,12 +109,12 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Erro no POST /login:', error.message);
-    return res.status(500).json({
-      erro: 'Erro ao realizar login'
-    });
-  }
-});
+  console.error('Erro no POST /login:', error);
+  return res.status(500).json({
+    erro: 'Erro ao realizar login',
+    detalhe: error.message
+  });
+}
 
 router.get('/users', async (req, res) => {
   try {
