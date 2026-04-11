@@ -22,6 +22,7 @@ const Dashboard = () => {
 
   const now = new Date();
 
+  // Próximo agendamento
   const nextAppointment = appointments?.data
     ?.filter((appt) => {
       const apptDate = parseBrazilianDateTime(appt.data_hora);
@@ -33,11 +34,13 @@ const Dashboard = () => {
       return dateA - dateB;
     })[0];
 
+  // Ordenação dos agendamentos
   const sortedAppointments = appointments?.data
     ? [...appointments.data].sort((a, b) => {
         const isCanceledA = a.status === "cancelado";
         const isCanceledB = b.status === "cancelado";
 
+        // Cancelados vão para o final
         if (isCanceledA && !isCanceledB) return 1;
         if (!isCanceledA && isCanceledB) return -1;
 
@@ -48,6 +51,7 @@ const Dashboard = () => {
         if (!dateA) return 1;
         if (!dateB) return -1;
 
+        // Mais próximo primeiro
         return dateA - dateB;
       })
     : [];
@@ -60,6 +64,7 @@ const Dashboard = () => {
         <div className="p-6 pb-20 md:pb-6">
           <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
+          {/* Próximo Agendamento */}
           <div className="mb-6">
             <h2 className="text-xl font-semibold mb-4">Próximo Agendamento</h2>
             {isLoading ? (
@@ -73,13 +78,19 @@ const Dashboard = () => {
               </Card>
             ) : (
               <Card>
-                <p className="text-zinc-400">Nenhum próximo agendamento encontrado</p>
+                <p className="text-zinc-400">
+                  Nenhum próximo agendamento encontrado
+                </p>
               </Card>
             )}
           </div>
 
+          {/* Meus Agendamentos */}
           <div>
-            <h2 className="text-xl font-semibold mb-4">Meus Agendamentos</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              Meus Agendamentos
+            </h2>
+
             {isLoading ? (
               <div className="space-y-4">
                 <Skeleton className="h-16" />
@@ -98,11 +109,14 @@ const Dashboard = () => {
               </div>
             ) : (
               <Card>
-                <p className="text-zinc-400">Nenhum agendamento encontrado</p>
+                <p className="text-zinc-400">
+                  Nenhum agendamento encontrado
+                </p>
               </Card>
             )}
           </div>
         </div>
+
         <MobileNav />
       </div>
     </div>
