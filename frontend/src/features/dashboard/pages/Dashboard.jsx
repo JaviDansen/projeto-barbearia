@@ -18,12 +18,11 @@ const parseBrazilianDateTime = (dateTimeString) => {
 };
 
 const Dashboard = () => {
-  const { data: appointments, isLoading } = useMyAppointments();
+  const { data: appointments = [], isLoading } = useMyAppointments();
 
   const now = new Date();
 
-  // Próximo agendamento
-  const nextAppointment = appointments?.data
+  const nextAppointment = appointments
     ?.filter((appt) => {
       const apptDate = parseBrazilianDateTime(appt.data_hora);
       return apptDate && apptDate > now && appt.status !== "cancelado";
@@ -34,27 +33,22 @@ const Dashboard = () => {
       return dateA - dateB;
     })[0];
 
-  // Ordenação dos agendamentos
-  const sortedAppointments = appointments?.data
-    ? [...appointments.data].sort((a, b) => {
-        const isCanceledA = a.status === "cancelado";
-        const isCanceledB = b.status === "cancelado";
+  const sortedAppointments = [...appointments].sort((a, b) => {
+    const isCanceledA = a.status === "cancelado";
+    const isCanceledB = b.status === "cancelado";
 
-        // Cancelados vão para o final
-        if (isCanceledA && !isCanceledB) return 1;
-        if (!isCanceledA && isCanceledB) return -1;
+    if (isCanceledA && !isCanceledB) return 1;
+    if (!isCanceledA && isCanceledB) return -1;
 
-        const dateA = parseBrazilianDateTime(a.data_hora);
-        const dateB = parseBrazilianDateTime(b.data_hora);
+    const dateA = parseBrazilianDateTime(a.data_hora);
+    const dateB = parseBrazilianDateTime(b.data_hora);
 
-        if (!dateA && !dateB) return 0;
-        if (!dateA) return 1;
-        if (!dateB) return -1;
+    if (!dateA && !dateB) return 0;
+    if (!dateA) return 1;
+    if (!dateB) return -1;
 
-        // Mais próximo primeiro
-        return dateA - dateB;
-      })
-    : [];
+    return dateA - dateB;
+  });
 
   return (
     <div className="flex min-h-screen bg-zinc-950 text-white">
@@ -64,7 +58,6 @@ const Dashboard = () => {
         <div className="p-6 pb-20 md:pb-6">
           <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
-          {/* Próximo Agendamento */}
           <div className="mb-6">
             <h2 className="text-xl font-semibold mb-4">Próximo Agendamento</h2>
             {isLoading ? (
@@ -78,19 +71,13 @@ const Dashboard = () => {
               </Card>
             ) : (
               <Card>
-                <p className="text-zinc-400">
-                  Nenhum próximo agendamento encontrado
-                </p>
+                <p className="text-zinc-400">Nenhum próximo agendamento encontrado</p>
               </Card>
             )}
           </div>
 
-          {/* Meus Agendamentos */}
           <div>
-            <h2 className="text-xl font-semibold mb-4">
-              Meus Agendamentos
-            </h2>
-
+            <h2 className="text-xl font-semibold mb-4">Meus Agendamentos</h2>
             {isLoading ? (
               <div className="space-y-4">
                 <Skeleton className="h-16" />
@@ -109,14 +96,11 @@ const Dashboard = () => {
               </div>
             ) : (
               <Card>
-                <p className="text-zinc-400">
-                  Nenhum agendamento encontrado
-                </p>
+                <p className="text-zinc-400">Nenhum agendamento encontrado</p>
               </Card>
             )}
           </div>
         </div>
-
         <MobileNav />
       </div>
     </div>
