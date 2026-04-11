@@ -1,7 +1,7 @@
 # 💈 Sistema de Agendamento - Barbearia
 
 Uma aplicação web completa para gerenciamento de agendamentos em barbearias e salões, desenvolvida com React, Node.js e PostgreSQL.
-
+#Estive aqui. Prof. Rondineli
 ## ✨ Funcionalidades
 
 - 🔐 **Autenticação**: Sistema de login e cadastro de usuários
